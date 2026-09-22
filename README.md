@@ -1,0 +1,48 @@
+# tracker
+
+GitHub 个人主页风格的每日习惯打卡页。打卡内容写在 TOML 里，推送到 `main` 之后自动构建，并由 GitHub Pages 发布。
+
+页面：<https://xinrea.github.io/tracker/>
+
+想让助手改数据时，把 [AGENTS.md](AGENTS.md) 交给它。那里有记一天、加目标、停用目标的步骤。
+
+## 数据放在哪
+
+- [`data/profile.toml`](data/profile.toml)：名字、简介、时区、热力图从周几开始
+- [`data/habits.toml`](data/habits.toml)：每日目标
+- [`logs/YYYY-MM-DD.toml`](logs/_template.toml)：某一天的打卡。复制 [`logs/_template.toml`](logs/_template.toml) 再改 `date`、`done` 和 `note`
+
+```toml
+date = 2026-09-22
+
+[read]
+done = true
+note = "读了 30 分钟"
+
+[exercise]
+done = false
+note = ""
+
+[sleep]
+done = true
+note = ""
+```
+
+没有这天的文件就是未记录。`done = false` 是明确没完成。两种都会打断连续天数；如果今天还没写，已经累计的连续天数会先保留。
+
+## 本地预览
+
+```bash
+npm install
+npm test
+BASE_PATH=/ npm run build
+npx serve dist
+```
+
+发布到 GitHub Pages 时不用设置 `BASE_PATH`，默认是 `/tracker/`。`dist/` 是构建结果，不要提交。
+
+## 自动部署
+
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) 在 `main` 有新提交时运行测试、生成页面并部署。
+
+仓库 Settings → Pages → Build and deployment → Source 选择 **GitHub Actions**。

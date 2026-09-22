@@ -1,0 +1,19 @@
+# 记某一天时，把本文件复制为 logs/YYYY-MM-DD.toml。
+# 不要在本文件里写真正的打卡结果。
+# date 必须改成和文件名相同的日期。
+# 下面每一块都要保留：必须覆盖 data/habits.toml 里所有 archived = false 的习惯。
+# 每个习惯只改 done（true / false）和可选的 note。
+
+date = 2026-09-22
+
+[read]
+done = false
+note = ""
+
+[exercise]
+done = false
+note = ""
+
+[sleep]
+done = false
+note = ""

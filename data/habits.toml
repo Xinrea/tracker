@@ -1,0 +1,28 @@
+# 每日目标。数组顺序就是页面上的展示顺序。
+# id 用在日志文件里，确定后不要改。只能是小写字母开头，后面接小写字母、数字或下划线。
+# since 从这一天起才计入连续天数，更早的空白不算断签。
+# archived = true 表示停用：新的日志不用再写它，历史记录仍会显示。
+
+[[habit]]
+id = "read"
+name = "阅读"
+description = "阅读至少 20 分钟"
+icon = "📖"
+since = 2026-09-22
+archived = false
+
+[[habit]]
+id = "exercise"
+name = "运动"
+description = "运动至少 20 分钟"
+icon = "🏃"
+since = 2026-09-22
+archived = false
+
+[[habit]]
+id = "sleep"
+name = "早睡"
+description = "23:30 前入睡"
+icon = "🌙"
+since = 2026-09-22
+archived = false
