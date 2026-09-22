@@ -25,7 +25,7 @@ done = false
 done = false
 
 [sleep]
-done = false
+done = true
 
 [wake]
 done = false
