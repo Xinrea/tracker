@@ -1,10 +1,12 @@
 # 页面上展示的身份。
 # timezone 用来判断「今天」，填写 IANA 时区名，例如 Asia/Shanghai。
+# avatar 是头像图片的 https 地址，不填则显示名字首字母。
 # week_start 决定热力图每一列从哪一天开始：
 #   sunday  与 GitHub 贡献图一致
 #   monday  从周一开始
 
 name = "Xinrea"
 bio = "用每天的小事，堆出一年的格子。"
+avatar = "https://avatars.githubusercontent.com/u/13964898"
 timezone = "Asia/Shanghai"
 week_start = "sunday"

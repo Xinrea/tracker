@@ -67,8 +67,11 @@ test("仓库里的 TOML 可以通过校验", () => {
     template: parse(fs.readFileSync("logs/_template.toml", "utf8")),
     logs: [],
   }, { today: TODAY });
-  assert.deepEqual(model.habits.map((habit) => habit.id), ["read", "exercise", "sleep"]);
+  assert.deepEqual(model.habits.map((habit) => habit.id), [
+    "cook", "pullup", "pushup", "fly", "cardio", "ukulele", "ffxiv", "sf", "sleep", "wake",
+  ]);
   assert.equal(model.habits[0].since, "2026-09-22");
+  assert.equal(model.profile.avatar, "https://avatars.githubusercontent.com/u/13964898");
   assert.equal(model.profile.weekStart, "sunday");
 });
 

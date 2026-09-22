@@ -45,8 +45,8 @@ function readProfile(input, errors) {
     errors.push("data/profile.toml 必须是一张表");
     return null;
   }
-  rejectUnknown(input, new Set(["name", "bio", "timezone", "week_start"]), "data/profile.toml", errors);
-  const profile = { name: "", bio: "", timezone: "", weekStart: "sunday" };
+  rejectUnknown(input, new Set(["name", "bio", "avatar", "timezone", "week_start"]), "data/profile.toml", errors);
+  const profile = { name: "", bio: "", avatar: "", timezone: "", weekStart: "sunday" };
   if (typeof input.name !== "string" || input.name.trim() === "") {
     errors.push("data/profile.toml 的 name 必须是非空字符串");
   } else {
@@ -56,6 +56,14 @@ function readProfile(input, errors) {
     errors.push("data/profile.toml 的 bio 必须是字符串");
   } else {
     profile.bio = input.bio.trim();
+  }
+  if (Object.hasOwn(input, "avatar")) {
+    const avatar = typeof input.avatar === "string" ? input.avatar.trim() : "";
+    if (!/^https:\/\/\S+$/.test(avatar)) {
+      errors.push("data/profile.toml 的 avatar 必须是 https 链接");
+    } else {
+      profile.avatar = avatar;
+    }
   }
   if (typeof input.timezone !== "string" || !isValidTimeZone(input.timezone)) {
     errors.push("data/profile.toml 的 timezone 必须是有效的 IANA 时区，例如 Asia/Shanghai");

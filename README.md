@@ -8,23 +8,19 @@ GitHub 个人主页风格的每日习惯打卡页。打卡内容写在 TOML 里�
 
 ## 数据放在哪
 
-- [`data/profile.toml`](data/profile.toml)：名字、简介、时区、热力图从周几开始
+- [`data/profile.toml`](data/profile.toml)：名字、简介、头像、时区、热力图从周几开始
 - [`data/habits.toml`](data/habits.toml)：每日目标
 - [`logs/YYYY-MM-DD.toml`](logs/_template.toml)：某一天的打卡。复制 [`logs/_template.toml`](logs/_template.toml) 再改 `date`、`done` 和 `note`
 
 ```toml
 date = 2026-09-22
 
-[read]
+[cook]
 done = true
-note = "读了 30 分钟"
+note = "自己做了晚饭"
 
-[exercise]
+[pullup]
 done = false
-note = ""
-
-[sleep]
-done = true
 note = ""
 ```
 

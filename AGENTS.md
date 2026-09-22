@@ -66,6 +66,7 @@ note = ""
 | --- | --- |
 | `name` | 页面上的名字 |
 | `bio` | 一句简介 |
+| `avatar` | 可选，头像的 https 地址 |
 | `timezone` | IANA 时区，用来判断今天 |
 | `week_start` | `sunday` 或 `monday` |
 

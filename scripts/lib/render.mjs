@@ -162,12 +162,15 @@ code {
   width: min(100%, 260px);
   aspect-ratio: 1;
   border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--border);
+}
+img.avatar { display: block; object-fit: cover; }
+div.avatar {
   display: grid;
   place-items: center;
   color: #fff;
   font-size: 72px;
   font-weight: 600;
-  box-shadow: 0 0 0 1px var(--border);
 }
 .profile h1 { margin-top: 16px; font-size: 24px; line-height: 1.25; font-weight: 600; }
 .bio { margin-top: 8px; font-size: 16px; }
@@ -369,6 +372,9 @@ export function renderPage(view, options = {}) {
   const basePath = normalizeBasePath(options.basePath);
   const { profile, overview, habits, activity, panels } = view;
   const color = avatarColor(profile.name);
+  const avatar = profile.avatar
+    ? `<img class="avatar" src="${escapeHtml(profile.avatar)}" alt="">`
+    : `<div class="avatar" style="background:${color}" aria-hidden="true">${escapeHtml(initial(profile.name))}</div>`;
   const titles = panels
     .map((panel, index) => {
       const hidden = index === 0 ? "" : " hidden";
@@ -407,7 +413,7 @@ export function renderPage(view, options = {}) {
 <body>
   <div class="wrap">
     <aside class="profile">
-      <div class="avatar" style="background:${color}" aria-hidden="true">${escapeHtml(initial(profile.name))}</div>
+      ${avatar}
       <div>
         <h1>${escapeHtml(profile.name)}</h1>
         <p class="bio">${escapeHtml(profile.bio)}</p>

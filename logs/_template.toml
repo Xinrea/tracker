@@ -6,14 +6,42 @@
 
 date = 2026-09-22
 
-[read]
+[cook]
 done = false
 note = ""
 
-[exercise]
+[pullup]
+done = false
+note = ""
+
+[pushup]
+done = false
+note = ""
+
+[fly]
+done = false
+note = ""
+
+[cardio]
+done = false
+note = ""
+
+[ukulele]
+done = false
+note = ""
+
+[ffxiv]
+done = false
+note = ""
+
+[sf]
 done = false
 note = ""
 
 [sleep]
+done = false
+note = ""
+
+[wake]
 done = false
 note = ""

@@ -4,25 +4,81 @@
 # archived = true 表示停用：新的日志不用再写它，历史记录仍会显示。
 
 [[habit]]
-id = "read"
-name = "阅读"
-description = "阅读至少 20 分钟"
-icon = "📖"
+id = "cook"
+name = "干净饮食"
+description = "自己做饭"
+icon = "🍳"
 since = 2026-09-22
 archived = false
 
 [[habit]]
-id = "exercise"
-name = "运动"
-description = "运动至少 20 分钟"
+id = "pullup"
+name = "引体向上"
+description = "10 个"
+icon = "💪"
+since = 2026-09-22
+archived = false
+
+[[habit]]
+id = "pushup"
+name = "俯卧撑"
+description = "50 个"
+icon = "🤸"
+since = 2026-09-22
+archived = false
+
+[[habit]]
+id = "fly"
+name = "哑铃飞鸟"
+description = "5x12"
+icon = "🏋️"
+since = 2026-09-22
+archived = false
+
+[[habit]]
+id = "cardio"
+name = "有氧"
+description = "30 分钟"
 icon = "🏃"
+since = 2026-09-22
+archived = false
+
+[[habit]]
+id = "ukulele"
+name = "尤克里里"
+description = "练习 30 分钟"
+icon = "🎸"
+since = 2026-09-22
+archived = false
+
+[[habit]]
+id = "ffxiv"
+name = "ffxiv 日常"
+description = "完成 ffxiv 每日任务"
+icon = "🎮"
+since = 2026-09-22
+archived = false
+
+[[habit]]
+id = "sf"
+name = "街霸训练"
+description = "对战 5 局"
+icon = "🥊"
 since = 2026-09-22
 archived = false
 
 [[habit]]
 id = "sleep"
 name = "早睡"
-description = "23:30 前入睡"
+description = "12:00 前入睡"
 icon = "🌙"
+since = 2026-09-22
+archived = false
+
+[[habit]]
+id = "wake"
+name = "早起"
+description = "08:00 前起床"
+icon = "🌅"
 since = 2026-09-22
 archived = false
