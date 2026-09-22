@@ -24,7 +24,7 @@
     {
       "binding": "DB",
       "database_name": "tracker-reactions",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "3692d06f-713c-41b0-b1ce-d62e99cdb640",
       "migrations_dir": "migrations"
     }
   ]
