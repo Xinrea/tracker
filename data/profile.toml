@@ -10,3 +10,7 @@ bio = "用每天的小事，堆出一年的格子。"
 avatar = "https://avatars.githubusercontent.com/u/13964898"
 timezone = "Asia/Shanghai"
 week_start = "sunday"
+
+# 浏览者可以点的表情。改这一列时，也要改 worker/wrangler.jsonc 的 ALLOWED 并重新部署 Worker。
+reactions = ["👍", "❤️", "🔥", "🎉"]
+reactions_api = "https://xinrea.cn/tracker/reactions"

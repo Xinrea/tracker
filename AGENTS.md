@@ -69,6 +69,8 @@ note = ""
 | `avatar` | 可选，头像的 https 地址 |
 | `timezone` | IANA 时区，用来判断今天 |
 | `week_start` | `sunday` 或 `monday` |
+| `reactions` | 可选，浏览者可以点的表情，1 到 8 个 |
+| `reactions_api` | 有 `reactions` 时必填，计数接口的 https 地址 |
 
 `data/habits.toml` 里每个 `[[habit]]`
 
@@ -90,6 +92,8 @@ note = ""
 | `note` | 可选字符串，最多 200 字 |
 
 不要增加上面没有的字段。构建会直接报错。
+
+浏览者点的表情计数存在 Cloudflare D1 里，不写进 `logs/`。如果改了 `reactions` 里的表情，还要同步 `worker/wrangler.jsonc` 的 `ALLOWED`，并在 `worker/` 里执行 `npm run deploy`。记打卡不用管 Worker。
 
 ## 校验会拒绝的情况
 

@@ -45,8 +45,8 @@ function readProfile(input, errors) {
     errors.push("data/profile.toml 必须是一张表");
     return null;
   }
-  rejectUnknown(input, new Set(["name", "bio", "avatar", "timezone", "week_start"]), "data/profile.toml", errors);
-  const profile = { name: "", bio: "", avatar: "", timezone: "", weekStart: "sunday" };
+  rejectUnknown(input, new Set(["name", "bio", "avatar", "timezone", "week_start", "reactions", "reactions_api"]), "data/profile.toml", errors);
+  const profile = { name: "", bio: "", avatar: "", timezone: "", weekStart: "sunday", reactions: [], reactionsApi: "" };
   if (typeof input.name !== "string" || input.name.trim() === "") {
     errors.push("data/profile.toml 的 name 必须是非空字符串");
   } else {
@@ -75,7 +75,38 @@ function readProfile(input, errors) {
   } else {
     profile.weekStart = input.week_start;
   }
+  readReactions(input, profile, errors);
   return profile;
+}
+
+function readReactions(input, profile, errors) {
+  const hasList = Object.hasOwn(input, "reactions");
+  const hasApi = Object.hasOwn(input, "reactions_api");
+  if (!hasList && !hasApi) return;
+  if (!Array.isArray(input.reactions) || input.reactions.length < 1 || input.reactions.length > 8) {
+    errors.push("data/profile.toml 的 reactions 需要 1 到 8 个表情");
+    return;
+  }
+  const seen = new Set();
+  for (const item of input.reactions) {
+    const emoji = typeof item === "string" ? item.trim() : "";
+    if (emoji === "" || [...emoji].length > 8) {
+      errors.push("data/profile.toml 的 reactions 每一项必须是一个表情");
+      return;
+    }
+    if (seen.has(emoji)) {
+      errors.push(`data/profile.toml 的表情 ${emoji} 重复了`);
+      return;
+    }
+    seen.add(emoji);
+    profile.reactions.push(emoji);
+  }
+  const api = typeof input.reactions_api === "string" ? input.reactions_api.trim() : "";
+  if (!/^https:\/\/\S+$/.test(api)) {
+    errors.push("data/profile.toml 的 reactions_api 必须是 https 链接");
+    return;
+  }
+  profile.reactionsApi = api;
 }
 
 function readHabits(input, errors) {

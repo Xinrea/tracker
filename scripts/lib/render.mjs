@@ -22,6 +22,15 @@ export function normalizeBasePath(input) {
   return base;
 }
 
+function reactionsMarkup(profile) {
+  if (!profile.reactions?.length || !profile.reactionsApi) return "";
+  const buttons = profile.reactions.map((emoji) => {
+    const safe = escapeHtml(emoji);
+    return `<button type="button" class="reaction" data-emoji="${safe}" aria-pressed="false" aria-label="贴上 ${safe}"><span class="reaction-emoji" aria-hidden="true">${safe}</span><span class="reaction-count">—</span></button>`;
+  }).join("");
+  return `<section class="reactions" data-api="${escapeHtml(profile.reactionsApi)}" aria-label="表情"><h2>贴个表情</h2><div class="reaction-list">${buttons}</div></section>`;
+}
+
 function initial(name) {
   const char = Array.from(name)[0] ?? "?";
   return char.toLocaleUpperCase("en-US");
@@ -285,6 +294,28 @@ button.day.mini { width: 12px; height: 12px; }
 .event-note { color: var(--muted); }
 .empty { color: var(--muted); padding: 8px 0; }
 .footer { color: var(--muted); font-size: 12px; }
+.reactions { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+.reactions h2 { margin-bottom: 8px; color: var(--muted); font-size: 12px; font-weight: 600; }
+.reaction-list { display: flex; flex-wrap: wrap; gap: 8px; }
+button.reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+button.reaction[aria-pressed="true"] {
+  border-color: var(--level-3);
+  background: color-mix(in srgb, var(--level-2) 28%, transparent);
+}
+button.reaction:disabled { cursor: progress; opacity: 0.6; }
+.reaction-count { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+button.reaction[aria-pressed="true"] .reaction-count { color: var(--done); }
 #tooltip {
   position: fixed;
   z-index: 20;
@@ -302,8 +333,10 @@ button.day.mini { width: 12px; height: 12px; }
 #tooltip[hidden] { display: none; }
 @media (max-width: 900px) {
   .wrap { grid-template-columns: 1fr; padding: 16px 16px 48px; }
-  .profile { position: static; display: flex; gap: 16px; align-items: center; }
+  .profile { position: static; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
   .avatar { width: 96px; font-size: 36px; flex: none; }
+  .profile-body { flex: 1; min-width: 0; }
+  .reactions { flex: 1 0 100%; margin-top: 4px; }
   .profile h1 { margin-top: 0; font-size: 20px; }
   .bio { font-size: 14px; }
   .stats { grid-template-columns: 1fr 1fr; }
@@ -366,6 +399,82 @@ document.addEventListener("focusout", (event) => {
 });
 
 window.addEventListener("scroll", hideTip, true);
+
+const reactionRoot = document.querySelector(".reactions");
+if (reactionRoot) {
+  const reactionApi = reactionRoot.getAttribute("data-api");
+  const visitorKey = "tracker-reaction-visitor";
+  const selectedKey = "tracker-reactions";
+  let visitorId = "";
+  let selected = new Set();
+  try {
+    visitorId = localStorage.getItem(visitorKey) || "";
+    if (!visitorId) {
+      visitorId = crypto.randomUUID();
+      localStorage.setItem(visitorKey, visitorId);
+    }
+    const saved = JSON.parse(localStorage.getItem(selectedKey) || "[]");
+    if (Array.isArray(saved)) selected = new Set(saved);
+  } catch (error) {
+    visitorId = visitorId || crypto.randomUUID();
+  }
+  let reactionCounts = null;
+
+  function paintReactions() {
+    reactionRoot.querySelectorAll(".reaction").forEach((button) => {
+      const emoji = button.getAttribute("data-emoji");
+      const value = reactionCounts && Object.prototype.hasOwnProperty.call(reactionCounts, emoji)
+        ? reactionCounts[emoji]
+        : null;
+      button.querySelector(".reaction-count").textContent = value === null ? "—" : String(value);
+      button.setAttribute("aria-pressed", selected.has(emoji) ? "true" : "false");
+    });
+  }
+
+  function rememberSelected() {
+    try {
+      localStorage.setItem(selectedKey, JSON.stringify(Array.from(selected)));
+    } catch (error) {
+      /* 隐私模式写不进本地存储时，这一次点击仍然发给服务器。 */
+    }
+  }
+
+  reactionRoot.addEventListener("click", (event) => {
+    const button = event.target.closest(".reaction");
+    if (!button || button.disabled) return;
+    const emoji = button.getAttribute("data-emoji");
+    const action = selected.has(emoji) ? "remove" : "add";
+    button.disabled = true;
+    fetch(reactionApi, {
+      method: "POST",
+      headers: { "content-type": "application/json", accept: "application/json" },
+      body: JSON.stringify({ emoji: emoji, action: action, visitor: visitorId }),
+    }).then((response) => {
+      if (!response.ok) throw new Error("reaction failed");
+      return response.json();
+    }).then((data) => {
+      if (action === "add") selected.add(emoji);
+      else selected.delete(emoji);
+      rememberSelected();
+      reactionCounts = data.counts || null;
+      paintReactions();
+    }).catch(() => {
+      paintReactions();
+    }).finally(() => {
+      button.disabled = false;
+    });
+  });
+
+  fetch(reactionApi, { headers: { accept: "application/json" } }).then((response) => {
+    if (!response.ok) throw new Error("reaction failed");
+    return response.json();
+  }).then((data) => {
+    reactionCounts = data.counts || null;
+    paintReactions();
+  }).catch(() => {
+    paintReactions();
+  });
+}
 `;
 
 export function renderPage(view, options = {}) {
@@ -414,7 +523,7 @@ export function renderPage(view, options = {}) {
   <div class="wrap">
     <aside class="profile">
       ${avatar}
-      <div>
+      <div class="profile-body">
         <h1>${escapeHtml(profile.name)}</h1>
         <p class="bio">${escapeHtml(profile.bio)}</p>
         <ul class="meta">
@@ -432,6 +541,7 @@ export function renderPage(view, options = {}) {
           </li>
         </ul>
       </div>
+      ${reactionsMarkup(profile)}
     </aside>
     <main class="main">
       <section class="stats" aria-label="总览">

@@ -72,6 +72,8 @@ test("仓库里的 TOML 可以通过校验", () => {
   ]);
   assert.equal(model.habits[0].since, "2026-09-22");
   assert.equal(model.profile.avatar, "https://avatars.githubusercontent.com/u/13964898");
+  assert.deepEqual(model.profile.reactions, ["👍", "❤️", "🔥", "🎉"]);
+  assert.equal(model.profile.reactionsApi, "https://xinrea.cn/tracker/reactions");
   assert.equal(model.profile.weekStart, "sunday");
 });
 
