@@ -88,23 +88,36 @@ function habitCard(habit) {
   </article>`;
 }
 
-function activityMarkup(activity) {
-  if (activity.length === 0) {
-    return `<p class="empty">还没有打卡记录。把 <code>logs/_template.toml</code> 复制成今天的日期文件，填好后推送到 main。</p>`;
-  }
-  return activity
-    .map((day) => {
-      const items = day.items
-        .map((item) => `<li class="event ${item.state}">
+function activityItems(day) {
+  return day.items
+    .map((item) => `<li class="event ${item.state}">
           <span class="event-icon" aria-hidden="true">${escapeHtml(item.icon)}</span>
           <span class="event-name">${escapeHtml(item.name)}</span>
           <span class="event-state">${escapeHtml(item.label)}</span>
           ${item.note ? `<span class="event-note">${escapeHtml(item.note)}</span>` : ""}
         </li>`)
-        .join("");
-      return `<section class="activity-day"><h3>${escapeHtml(day.dateLabel)}</h3><ul>${items}</ul></section>`;
+    .join("");
+}
+
+function activityMarkup(activity) {
+  if (activity.length === 0) {
+    return `<p class="empty">还没有打卡记录。把 <code>logs/_template.toml</code> 复制成今天的日期文件，填好后推送到 main。</p>`;
+  }
+  const tabs = activity
+    .map((day, index) => {
+      const selected = index === 0;
+      const date = escapeHtml(day.date);
+      return `<button type="button" class="activity-tab" role="tab" id="activity-tab-${date}" data-activity-tab="${date}" aria-controls="activity-panel-${date}" aria-selected="${selected ? "true" : "false"}" tabindex="${selected ? "0" : "-1"}">${escapeHtml(day.dateLabel)}</button>`;
     })
     .join("");
+  const panels = activity
+    .map((day, index) => {
+      const date = escapeHtml(day.date);
+      const hidden = index === 0 ? "" : " hidden";
+      return `<div class="activity-panel" role="tabpanel" id="activity-panel-${date}" data-activity-panel="${date}" aria-labelledby="activity-tab-${date}"${hidden}><h3>${escapeHtml(day.dateLabel)}</h3><ul>${activityItems(day)}</ul></div>`;
+    })
+    .join("");
+  return `<div class="activity-tabs" role="tablist" aria-label="最近记录">${tabs}</div>${panels}`;
 }
 
 const STYLES = `
@@ -201,7 +214,7 @@ div.avatar {
 .card { padding: 16px; }
 .graph-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
 .graph-head h2 { font-size: 16px; font-weight: 400; }
-.graph-head h2[hidden], .cal-scroll[hidden] { display: none; }
+.graph-head h2[hidden], .cal-scroll[hidden], .activity-panel[hidden] { display: none; }
 .graph-head strong { font-weight: 600; }
 select {
   font: inherit;
@@ -276,10 +289,41 @@ button.day[data-today="true"], button.day:hover, button.day:focus-visible {
 .since { margin-top: 10px; font-size: 12px; }
 .recent { display: flex; gap: 3px; margin-top: 8px; }
 button.day.mini { width: 12px; height: 12px; }
-.activity { padding: 8px 16px 16px; }
-.activity-day { margin-top: 12px; }
-.activity-day h3 { font-size: 14px; font-weight: 600; }
-.activity-day ul { list-style: none; padding: 0; }
+.activity { padding: 0; }
+.activity > .empty { margin: 8px 16px 16px; }
+.activity-tabs {
+  display: flex;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border-bottom: 1px solid var(--border);
+  scrollbar-width: thin;
+}
+button.activity-tab {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 10px 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  line-height: 1.4;
+  white-space: nowrap;
+  cursor: pointer;
+}
+button.activity-tab:hover { color: var(--text); }
+button.activity-tab[aria-selected="true"] {
+  color: var(--text);
+  font-weight: 600;
+  border-bottom-color: var(--accent);
+}
+button.activity-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.activity-panel { padding: 12px 16px 16px; }
+.activity-panel h3 { font-size: 14px; font-weight: 600; }
+.activity-panel ul { list-style: none; padding: 0; }
 .event {
   display: flex;
   flex-wrap: wrap;
@@ -399,6 +443,42 @@ document.addEventListener("focusout", (event) => {
 });
 
 window.addEventListener("scroll", hideTip, true);
+
+const activityTabs = document.querySelector(".activity-tabs");
+if (activityTabs) {
+  const activityRoot = activityTabs.parentElement;
+  function showActivity(date) {
+    activityRoot.querySelectorAll("[data-activity-tab]").forEach((tab) => {
+      const on = tab.getAttribute("data-activity-tab") === date;
+      tab.setAttribute("aria-selected", on ? "true" : "false");
+      tab.tabIndex = on ? 0 : -1;
+    });
+    activityRoot.querySelectorAll("[data-activity-panel]").forEach((panel) => {
+      panel.hidden = panel.getAttribute("data-activity-panel") !== date;
+    });
+  }
+  activityTabs.addEventListener("click", (event) => {
+    const tab = event.target.closest("[data-activity-tab]");
+    if (!tab) return;
+    showActivity(tab.getAttribute("data-activity-tab"));
+  });
+  activityTabs.addEventListener("keydown", (event) => {
+    const tabs = Array.from(activityTabs.querySelectorAll("[data-activity-tab]"));
+    const index = tabs.indexOf(document.activeElement);
+    if (index < 0) return;
+    let next = index;
+    if (event.key === "ArrowRight") next = (index + 1) % tabs.length;
+    else if (event.key === "ArrowLeft") next = (index - 1 + tabs.length) % tabs.length;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = tabs.length - 1;
+    else return;
+    event.preventDefault();
+    const tab = tabs[next];
+    showActivity(tab.getAttribute("data-activity-tab"));
+    tab.focus();
+    tab.scrollIntoView({ inline: "nearest", block: "nearest" });
+  });
+}
 
 const reactionRoot = document.querySelector(".reactions");
 if (reactionRoot) {
