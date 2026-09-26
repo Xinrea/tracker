@@ -1,0 +1,31 @@
+date = 2026-09-26
+
+[cook]
+done = false
+
+[pullup]
+done = true
+
+[pushup]
+done = true
+
+[fly]
+done = false
+
+[cardio]
+done = false
+
+[ukulele]
+done = true
+
+[ffxiv]
+done = false
+
+[sf]
+done = false
+
+[sleep]
+done = false
+
+[wake]
+done = false
