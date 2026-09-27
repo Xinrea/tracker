@@ -13,7 +13,7 @@ done = false
 done = false
 
 [cardio]
-done = false
+done = true
 
 [ukulele]
 done = true
