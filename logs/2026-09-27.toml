@@ -22,7 +22,7 @@ done = true
 done = true
 
 [sf]
-done = false
+done = true
 
 [sleep]
 done = false
