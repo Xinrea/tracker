@@ -7,7 +7,8 @@ done = false
 done = false
 
 [pushup]
-done = false
+done = true
+completed_at = 09:00:00
 
 [fly]
 done = false
@@ -29,3 +30,4 @@ done = false
 
 [wake]
 done = true
+completed_at = 07:54:00

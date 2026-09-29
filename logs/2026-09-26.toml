@@ -5,9 +5,11 @@ done = false
 
 [pullup]
 done = true
+completed_at = 19:59:00
 
 [pushup]
 done = true
+completed_at = 19:59:00
 
 [fly]
 done = false
@@ -17,9 +19,11 @@ done = false
 
 [ukulele]
 done = true
+completed_at = 19:59:00
 
 [ffxiv]
 done = true
+completed_at = 23:44:00
 
 [sf]
 done = false

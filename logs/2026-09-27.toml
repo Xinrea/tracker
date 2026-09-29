@@ -14,9 +14,11 @@ done = false
 
 [cardio]
 done = true
+completed_at = 19:27:00
 
 [ukulele]
 done = true
+completed_at = 10:36:00
 
 [ffxiv]
 done = true
@@ -26,6 +28,9 @@ done = true
 
 [sleep]
 done = true
+note = "大约 23:00 入睡（次日早上补记，非精确时刻）"
+completed_at = 23:00:00
 
 [wake]
 done = true
+completed_at = 10:36:00
