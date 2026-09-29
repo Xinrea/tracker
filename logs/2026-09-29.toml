@@ -27,7 +27,8 @@ done = false
 done = false
 
 [sleep]
-done = false
+done = true
+completed_at = 23:31:00
 
 [wake]
 done = true
