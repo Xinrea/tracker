@@ -10,7 +10,7 @@ GitHub 个人主页风格的每日习惯打卡页。打卡内容写在 TOML 里�
 
 - [`data/profile.toml`](data/profile.toml)：名字、简介、头像、时区、热力图从周几开始、浏览者可以点的表情
 - [`data/habits.toml`](data/habits.toml)：每日目标
-- [`logs/YYYY-MM-DD.toml`](logs/_template.toml)：某一天的打卡。复制 [`logs/_template.toml`](logs/_template.toml) 再改 `date`、`done` 和 `note`
+- [`logs/YYYY-MM-DD.toml`](logs/_template.toml)：某一天的打卡。复制 [`logs/_template.toml`](logs/_template.toml) 再改 `date`、`done`、`note` 和可选的 `completed_at`
 
 ```toml
 date = 2026-09-22
@@ -18,11 +18,14 @@ date = 2026-09-22
 [cook]
 done = true
 note = "自己做了晚饭"
+completed_at = 19:30:00
 
 [pullup]
 done = false
 note = ""
 ```
+
+`completed_at` 是 `data/profile.toml` 里时区的本地时间（24 小时制）。可以写成 TOML 时间 `19:30:00`，或字符串 `"19:30"`。不写、或留空时，页面不显示完成时间。旧日志不用补。
 
 没有这天的文件就是未记录。`done = false` 是明确没完成。两种都会打断连续天数；如果今天还没写，已经累计的连续天数会先保留。
 

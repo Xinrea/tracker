@@ -1,4 +1,4 @@
-import { addDays, dayIndex, eachDate, formatChineseDate, weekStartOf } from "./dates.mjs";
+import { addDays, dayIndex, eachDate, formatChineseDate, formatClock, weekStartOf } from "./dates.mjs";
 
 const STATE_LABEL = {
   done: "完成",
@@ -160,10 +160,11 @@ export function buildView(model) {
     for (const habit of visible) {
       const entry = log.entries[habit.id];
       const note = entry?.note ? ` · ${entry.note}` : "";
+      const clock = entry?.done && entry.completedAt ? ` ${formatClock(entry.completedAt)}` : "";
       if (!entry) lines.push(`${habit.icon} ${habit.name}：未填写`);
       else if (entry.done) {
         done += 1;
-        lines.push(`${habit.icon} ${habit.name}：完成${note}`);
+        lines.push(`${habit.icon} ${habit.name}：完成${clock}${note}`);
       } else {
         lines.push(`${habit.icon} ${habit.name}：未完成${note}`);
       }
@@ -250,10 +251,12 @@ export function buildView(model) {
     for (let offset = 6; offset >= 0; offset -= 1) {
       const date = addDays(today, -offset);
       const state = entryState(habit, date);
+      const entry = logByDate.get(date)?.entries[habit.id];
+      const clock = state === "done" && entry?.completedAt ? ` ${formatClock(entry.completedAt)}` : "";
       recent.push({
         date,
         level: state === "done" ? 4 : 0,
-        tip: `${formatChineseDate(date)}\n${habit.icon} ${habit.name}：${STATE_LABEL[state]}`,
+        tip: `${formatChineseDate(date)}\n${habit.icon} ${habit.name}：${STATE_LABEL[state]}${clock}`,
       });
     }
     const rate = completionRate(habit);
@@ -279,12 +282,14 @@ export function buildView(model) {
         .map((habit) => {
           const entry = log.entries[habit.id];
           const state = !entry ? "absent" : entry.done ? "done" : "miss";
+          const completedAt = state === "done" && entry?.completedAt ? entry.completedAt : "";
           return {
             icon: habit.icon,
             name: habit.name,
             state,
             label: STATE_LABEL[state],
             note: entry?.note ?? "",
+            completedAt,
           };
         }),
     }));
