@@ -1,4 +1,4 @@
-import { isValidTimeZone, normalizeDate, todayInTimeZone } from "./dates.mjs";
+import { isValidTimeZone, normalizeDate, normalizeLocalTime, todayInTimeZone } from "./dates.mjs";
 
 const HABIT_ID = /^[a-z][a-z0-9_]*$/;
 const LOG_FILE = /^(\d{4}-\d{2}-\d{2})\.toml$/;
@@ -182,7 +182,7 @@ function readEntry(raw, where, errors) {
     errors.push(`${where} 必须是一张表`);
     return null;
   }
-  rejectUnknown(raw, new Set(["done", "note"]), where, errors);
+  rejectUnknown(raw, new Set(["done", "note", "completed_at"]), where, errors);
   if (!Object.hasOwn(raw, "done")) {
     errors.push(`${where} 缺少 done`);
     return null;
@@ -203,7 +203,20 @@ function readEntry(raw, where, errors) {
     }
     note = raw.note;
   }
-  return { done: raw.done, note };
+  let completedAt = "";
+  if (Object.hasOwn(raw, "completed_at")) {
+    const time = normalizeLocalTime(raw.completed_at);
+    if (time === null) {
+      errors.push(`${where} 的 completed_at 必须是 profile 时区下的本地时间，例如 07:42:00`);
+      return null;
+    }
+    completedAt = time;
+  }
+  if (completedAt && raw.done === false) {
+    errors.push(`${where} 没有完成，不能填写 completed_at`);
+    return null;
+  }
+  return { done: raw.done, note, completedAt };
 }
 
 function habitMap(habits) {

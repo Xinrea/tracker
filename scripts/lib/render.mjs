@@ -1,3 +1,5 @@
+import { formatClock } from "./dates.mjs";
+
 const AVATAR_COLORS = ["#0969da", "#8250df", "#bf3989", "#cf222e", "#1a7f37", "#9a6700"];
 
 export function escapeHtml(value) {
@@ -89,14 +91,13 @@ function habitCard(habit) {
 }
 
 function activityItems(day) {
-  return day.items
-    .map((item) => `<li class="event ${item.state}">
-          <span class="event-icon" aria-hidden="true">${escapeHtml(item.icon)}</span>
-          <span class="event-name">${escapeHtml(item.name)}</span>
-          <span class="event-state">${escapeHtml(item.label)}</span>
-          ${item.note ? `<span class="event-note">${escapeHtml(item.note)}</span>` : ""}
-        </li>`)
-    .join("");
+  return day.items.map((item) => {
+    const time = item.completedAt
+      ? `<time class="event-time" datetime="${escapeHtml(item.completedAt)}">${escapeHtml(formatClock(item.completedAt))}</time>`
+      : "";
+    const note = item.note ? `<span class="event-note">${escapeHtml(item.note)}</span>` : "";
+    return `<li class="event ${item.state}"><span class="event-icon" aria-hidden="true">${escapeHtml(item.icon)}</span><span class="event-name">${escapeHtml(item.name)}</span><span class="event-state">${escapeHtml(item.label)}</span>${time}${note}</li>`;
+  }).join("");
 }
 
 function activityMarkup(activity) {
@@ -335,7 +336,8 @@ button.activity-tab:focus-visible {
 .event-name { font-weight: 600; }
 .event-state.done, .event.done .event-state { color: var(--done); }
 .event.miss .event-state, .event.absent .event-state { color: var(--miss); }
-.event-note { color: var(--muted); }
+.event-time, .event-note { color: var(--muted); }
+.event-time { font-variant-numeric: tabular-nums; }
 .empty { color: var(--muted); padding: 8px 0; }
 .footer { color: var(--muted); font-size: 12px; }
 .reactions { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }

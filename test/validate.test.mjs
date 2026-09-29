@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 import { parse } from "smol-toml";
+import { todayInTimeZone } from "../scripts/lib/dates.mjs";
 import { listLogFiles, validateData } from "../scripts/lib/validate.mjs";
 
 const TODAY = "2026-09-22";
@@ -147,6 +148,92 @@ test("不能记录未来，也不能早于 since", () => {
     }],
   }));
   assert.match(early.join("\n"), /从 2026-09-01 才开始/);
+});
+
+test("completed_at 可选，本地时间会规范成 HH:MM:SS", () => {
+  const parsed = parse(`
+date = 2026-09-21
+
+[read]
+done = true
+completed_at = 07:42:00
+note = "晨读"
+`);
+  const model = validateData(input({
+    logs: [{ file: "2026-09-21.toml", data: parsed }],
+  }), { today: TODAY });
+  assert.equal(model.logs[0].entries.read.completedAt, "07:42:00");
+
+  const quoted = validateData(input({
+    logs: [{
+      file: "2026-09-21.toml",
+      data: { date: "2026-09-21", read: { done: true, completed_at: "07:42" } },
+    }],
+  }), { today: TODAY });
+  assert.equal(quoted.logs[0].entries.read.completedAt, "07:42:00");
+
+  const empty = validateData(input({
+    logs: [{
+      file: "2026-09-21.toml",
+      data: { date: "2026-09-21", read: { done: true, completed_at: "" } },
+    }],
+  }), { today: TODAY });
+  assert.equal(empty.logs[0].entries.read.completedAt, "");
+
+  const missing = validateData(input({
+    logs: [{
+      file: "2026-09-21.toml",
+      data: { date: "2026-09-21", read: { done: true } },
+    }],
+  }), { today: TODAY });
+  assert.equal(missing.logs[0].entries.read.completedAt, "");
+});
+
+test("非法或未完成时的 completed_at 会被拒绝", () => {
+  const bad = messages(input({
+    logs: [{
+      file: "2026-09-21.toml",
+      data: { date: "2026-09-21", read: { done: true, completed_at: "7:42" } },
+    }],
+  }));
+  assert.match(bad.join("\n"), /completed_at 必须是 profile 时区下的本地时间/);
+
+  const zoned = messages(input({
+    logs: [{
+      file: "2026-09-21.toml",
+      data: parse(`
+date = 2026-09-21
+
+[read]
+done = true
+completed_at = 2026-09-21T07:42:00+08:00
+`),
+    }],
+  }));
+  assert.match(zoned.join("\n"), /completed_at 必须是 profile 时区下的本地时间/);
+
+  const missed = messages(input({
+    logs: [{
+      file: "2026-09-21.toml",
+      data: { date: "2026-09-21", read: { done: false, completed_at: "07:42" } },
+    }],
+  }));
+  assert.match(missed.join("\n"), /没有完成，不能填写 completed_at/);
+});
+
+test("已有日志可以没有 completed_at", () => {
+  const names = fs.readdirSync("logs").filter((name) => /^\d{4}-\d{2}-\d{2}\.toml$/.test(name));
+  const model = validateData({
+    profile: parse(fs.readFileSync("data/profile.toml", "utf8")),
+    habits: parse(fs.readFileSync("data/habits.toml", "utf8")),
+    template: parse(fs.readFileSync("logs/_template.toml", "utf8")),
+    logs: names.map((file) => ({
+      file,
+      data: parse(fs.readFileSync(`logs/${file}`, "utf8")),
+    })),
+  }, { today: todayInTimeZone("Asia/Shanghai") });
+  assert.ok(model.logs.length >= names.length);
+  assert.ok(model.logs.some((log) => Object.values(log.entries).every((entry) => entry.completedAt === "")));
 });
 
 test("拒绝未知字段和无法识别的日志文件名", () => {

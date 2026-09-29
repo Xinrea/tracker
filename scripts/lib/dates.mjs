@@ -68,6 +68,8 @@ export function isValidTimeZone(timeZone) {
   }
 }
 
+const LOCAL_TIME = /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/;
+
 export function normalizeDate(value) {
   if (typeof value === "string") return parseISODate(value.trim());
   if (value instanceof Date) {
@@ -76,4 +78,29 @@ export function normalizeDate(value) {
     return parseISODate(value.toISOString().slice(0, 10));
   }
   return null;
+}
+
+function clockFromParts(hour, minute, second = "00") {
+  return `${hour}:${minute}:${second}`;
+}
+
+export function normalizeLocalTime(value) {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed === "") return "";
+    const match = LOCAL_TIME.exec(trimmed);
+    if (!match) return null;
+    return clockFromParts(match[1], match[2], match[3]);
+  }
+  if (value instanceof Date && typeof value.isTime === "function" && value.isTime()) {
+    const match = /^(\d{2}):(\d{2}):(\d{2})/.exec(value.toISOString());
+    if (!match) return null;
+    return clockFromParts(match[1], match[2], match[3]);
+  }
+  return null;
+}
+
+export function formatClock(value) {
+  if (!value) return "";
+  return value.endsWith(":00") ? value.slice(0, 5) : value;
 }

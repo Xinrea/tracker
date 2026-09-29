@@ -9,12 +9,13 @@
 ## 记今天的打卡
 
 1. 打开 `data/profile.toml`，用其中的 `timezone` 确定「今天」。不要用运行环境的本地时区代替它。日期格式是 `YYYY-MM-DD`。
-2. 如果 `logs/YYYY-MM-DD.toml` 已经存在，只改这个文件里对应习惯的 `done` 和 `note`。
+2. 如果 `logs/YYYY-MM-DD.toml` 已经存在，只改这个文件里对应习惯的 `done`、`note` 和 `completed_at`。
 3. 如果不存在，把 `logs/_template.toml` 复制为 `logs/YYYY-MM-DD.toml`。
 4. 把新文件里的 `date` 改成和文件名相同的日期。
-5. 每个习惯只改两处：
+5. 每个习惯只改这些字段：
    - `done`：完成写 `true`，没完成写 `false`
    - `note`：可选，一句说明；没有就留空字符串或删掉这一行
+   - `completed_at`：可选，完成时刻。按 `profile.toml` 的 `timezone` 写本地时间（现在是 Asia/Shanghai），TOML 时间 `07:42:00` 或字符串 `"07:42"`。没有完成时间就留空字符串或删掉这一行，页面不会显示时间。不要给旧记录编造时间。未完成时不要填。
 6. 不要增删习惯表，不要改 `id`。模板里的习惯必须和 `data/habits.toml` 中 `archived = false` 的习惯一一对应。
 7. 提交并推送到 `main`。提交说明写清楚日期，例如：`记录 2026-09-22 的打卡`。
 
@@ -40,6 +41,7 @@ archived = false
 [water]
 done = false
 note = ""
+completed_at = ""
 ```
 
 `id` 规则：
@@ -90,6 +92,7 @@ note = ""
 | `date` | 与文件名相同的日期 |
 | `done` | 必须是布尔值 |
 | `note` | 可选字符串，最多 200 字 |
+| `completed_at` | 可选。完成时刻，表示 `timezone` 里的本地钟点。写法是不带引号的 TOML 时间 `07:42:00`，或字符串 `"07:42"` / `"07:42:00"`。不写或空字符串表示没有记录时间，页面不显示。只在 `done = true` 时填写。 |
 
 不要增加上面没有的字段。构建会直接报错。
 
@@ -101,6 +104,7 @@ note = ""
 - 日期晚于 `timezone` 里的今天
 - 习惯写在自己的 `since` 之前
 - `done` 缺失，或不是布尔值
+- `completed_at` 不是本地时间，或习惯未完成却填了完成时间
 - 引用了不存在的习惯
 - `logs/_template.toml` 和当前未停用的习惯不一致
 - 未知字段、重复的 `id`
