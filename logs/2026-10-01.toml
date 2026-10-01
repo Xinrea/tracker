@@ -29,9 +29,9 @@ note = ""
 completed_at = ""
 
 [cardio]
-done = false
+done = true
 note = ""
-completed_at = ""
+completed_at = 01:00:00
 
 [ukulele]
 done = false
