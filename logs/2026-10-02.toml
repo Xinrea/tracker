@@ -49,9 +49,9 @@ note = ""
 completed_at = ""
 
 [sleep]
-done = false
+done = true
 note = ""
-completed_at = ""
+completed_at = 23:49:00
 
 [wake]
 done = true
