@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "smol-toml";
+import { writeDistAssets } from "./lib/assets.mjs";
 import { buildView } from "./lib/stats.mjs";
 import { renderPage } from "./lib/render.mjs";
 import { listLogFiles, TrackerError, validateData } from "./lib/validate.mjs";
@@ -40,13 +41,14 @@ try {
     template: readToml("logs/_template.toml"),
     logs: loadLogs(),
   });
-  const html = renderPage(buildView(model), {
-    basePath: process.env.BASE_PATH ?? "/tracker/",
-  });
+  const basePath = process.env.BASE_PATH ?? "/tracker/";
+  const html = renderPage(buildView(model), { basePath });
   const dist = path.join(root, "dist");
   fs.mkdirSync(dist, { recursive: true });
   fs.writeFileSync(path.join(dist, "index.html"), html);
+  const assets = writeDistAssets(dist, { profile: model.profile, basePath });
   console.log(`已生成 dist/index.html（今天 ${model.today}，${model.logs.length} 天记录）`);
+  console.log(`已写入 ${assets.map((name) => `dist/${name}`).join("、")}`);
 } catch (error) {
   console.error(error.message);
   process.exit(1);

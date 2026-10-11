@@ -1,4 +1,7 @@
 import { formatClock } from "./dates.mjs";
+import { normalizeBasePath, renderHead } from "./meta.mjs";
+
+export { normalizeBasePath };
 
 const AVATAR_COLORS = ["#0969da", "#8250df", "#bf3989", "#cf222e", "#1a7f37", "#9a6700"];
 
@@ -13,15 +16,6 @@ export function escapeHtml(value) {
 
 function escapeAttr(value) {
   return escapeHtml(value).replaceAll("\n", "&#10;");
-}
-
-export function normalizeBasePath(input) {
-  let base = input ?? "/tracker/";
-  base = base.trim();
-  if (base === "") return "/";
-  if (!base.startsWith("/")) base = `/${base}`;
-  if (!base.endsWith("/")) base = `${base}/`;
-  return base;
 }
 
 function reactionsMarkup(profile) {
@@ -598,7 +592,7 @@ export function renderPage(view, options = {}) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <base href="${escapeHtml(basePath)}">
-  <title>${escapeHtml(profile.name)} 的习惯打卡</title>
+${renderHead(profile, basePath)}
   <style>${STYLES}</style>
 </head>
 <body>
