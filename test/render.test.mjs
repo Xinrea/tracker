@@ -63,10 +63,17 @@ test("最近记录用日期标签，默认只展开最新一天", () => {
   });
   const html = renderPage(view);
   assert.match(html, /class="activity-tabs" role="tablist"/);
+  assert.match(html, /id="activity-tab-2026-09-23"[^>]*>2026年9月23日<\/button>/);
+  assert.match(html, /id="activity-tab-2026-09-22"[^>]*>2026年9月22日<\/button>/);
   assert.match(html, /data-activity-tab="2026-09-23"[^>]*aria-selected="true"/);
   assert.match(html, /data-activity-tab="2026-09-22"[^>]*aria-selected="false"/);
+  assert.match(html, /id="activity-panel-2026-09-23"[^>]*aria-labelledby="activity-tab-2026-09-23"/);
+  assert.match(html, /id="activity-panel-2026-09-22"[^>]*aria-labelledby="activity-tab-2026-09-22"/);
   assert.match(html, /data-activity-panel="2026-09-23"(?![^>]*hidden)/);
   assert.match(html, /data-activity-panel="2026-09-22"[^>]*hidden/);
+  assert.doesNotMatch(html, /<div class="activity-panel"[^>]*>\s*<h3>/);
+  assert.equal(html.includes("<h3>2026年9月23日</h3>"), false);
+  assert.equal(html.includes("<h3>2026年9月22日</h3>"), false);
   assert.match(html, /新的一天/);
   assert.match(html, /旧的一天/);
   assert.equal(html.match(/class="activity-panel"/g).length, 2);

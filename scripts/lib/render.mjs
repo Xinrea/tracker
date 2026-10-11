@@ -115,7 +115,7 @@ function activityMarkup(activity) {
     .map((day, index) => {
       const date = escapeHtml(day.date);
       const hidden = index === 0 ? "" : " hidden";
-      return `<div class="activity-panel" role="tabpanel" id="activity-panel-${date}" data-activity-panel="${date}" aria-labelledby="activity-tab-${date}"${hidden}><h3>${escapeHtml(day.dateLabel)}</h3><ul>${activityItems(day)}</ul></div>`;
+      return `<div class="activity-panel" role="tabpanel" id="activity-panel-${date}" data-activity-panel="${date}" aria-labelledby="activity-tab-${date}"${hidden}><ul>${activityItems(day)}</ul></div>`;
     })
     .join("");
   return `<div class="activity-tabs" role="tablist" aria-label="最近记录">${tabs}</div>${panels}`;
@@ -323,8 +323,8 @@ button.activity-tab:focus-visible {
   outline-offset: -2px;
 }
 .activity-panel { padding: 12px 16px 16px; }
-.activity-panel h3 { font-size: 14px; font-weight: 600; }
 .activity-panel ul { list-style: none; padding: 0; }
+.activity-panel .event:first-child { border-top: 0; }
 .event {
   display: flex;
   flex-wrap: wrap;
