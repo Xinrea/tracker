@@ -34,14 +34,14 @@ note = ""
 completed_at = 09:10:00
 
 [ukulele]
-done = false
+done = true
 note = ""
-completed_at = ""
+completed_at = 21:00:00
 
 [ffxiv]
-done = false
+done = true
 note = ""
-completed_at = ""
+completed_at = 21:00:00
 
 [sf]
 done = false
