@@ -19,9 +19,9 @@ note = ""
 completed_at = ""
 
 [pushup]
-done = false
+done = true
 note = ""
-completed_at = ""
+completed_at = 22:41:00
 
 [fly]
 done = false
