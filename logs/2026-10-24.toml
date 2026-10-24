@@ -24,9 +24,9 @@ note = ""
 completed_at = ""
 
 [fly]
-done = false
+done = true
 note = ""
-completed_at = ""
+completed_at = 20:17:00
 
 [cardio]
 done = false
