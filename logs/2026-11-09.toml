@@ -54,6 +54,6 @@ note = ""
 completed_at = ""
 
 [wake]
-done = false
+done = true
 note = ""
-completed_at = ""
+completed_at = 07:30:00
