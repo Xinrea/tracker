@@ -371,6 +371,7 @@ button.reaction[aria-pressed="true"] .reaction-count { color: var(--done); }
   box-shadow: 0 8px 24px rgba(140, 149, 159, 0.2);
 }
 #tooltip[hidden] { display: none; }
+#tooltip .tip-done { text-decoration: line-through; text-decoration-color: rgba(255, 255, 255, 0.7); color: rgba(255, 255, 255, 0.6); }
 @media (max-width: 900px) {
   .wrap { grid-template-columns: 1fr; padding: 16px 16px 48px; }
   .profile { position: static; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
@@ -398,7 +399,12 @@ function showTip(day) {
   const text = day.getAttribute("data-tip");
   if (!text) return;
   tip.hidden = false;
-  tip.textContent = text;
+  tip.replaceChildren(...text.split("\\n").map((line) => {
+    const row = document.createElement("div");
+    row.textContent = line;
+    if (/：完成/.test(line)) row.className = "tip-done";
+    return row;
+  }));
   const rect = day.getBoundingClientRect();
   const tipRect = tip.getBoundingClientRect();
   let left = rect.left + rect.width / 2 - tipRect.width / 2;
