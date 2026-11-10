@@ -9,9 +9,9 @@
 date = 2026-11-10
 
 [cook]
-done = false
+done = true
 note = ""
-completed_at = ""
+completed_at = 21:38:00
 
 [pullup]
 done = true
