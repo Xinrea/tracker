@@ -14,9 +14,9 @@ note = ""
 completed_at = ""
 
 [pullup]
-done = false
+done = true
 note = ""
-completed_at = ""
+completed_at = 09:04:00
 
 [pushup]
 done = false
