@@ -6,7 +6,7 @@
 # completed_at 是 data/profile.toml 里 timezone 的本地时间（24 小时制），例如 07:42:00。
 # 不写这一行，或留空字符串，页面都不显示完成时间。不要给没有时间的旧日志补写。
 
-date = "2026-11-16"
+date = 2026-11-16
 
 [cook]
 done = false
